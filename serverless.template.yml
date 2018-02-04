@@ -1,0 +1,45 @@
+
+service: serverless-codebuild-trigger
+
+
+custom:
+    region: eu-west-1 # AWS region where the CodeBuild project and lambda are
+    project: "" # CodeBuild project name
+    projectArn: "" # CodeBuild project ARN
+    repoArn: "" # CodeCommit repository ARN
+    #branch: master # Uncomment to only act on commits to master
+
+
+provider:
+    name: aws
+    runtime: python2.7
+    region: "${self:custom.region}"
+    environment:
+        region: "${self:custom.region}"
+        project: "${self:custom.project}"
+    iamRoleStatements:
+        -
+            Effect: "Allow"
+            Action:
+                - "codebuild:StartBuild"
+            Resource: "${self:custom.projectArn}"
+
+
+plugins:
+    - serverless-python-requirements
+
+
+functions:
+    build:
+        handler: handler.build
+        memorySize: 64
+        events:
+            - cloudwatchEvent:
+                event:
+                    source:
+                        - "aws.codecommit"
+                    detail-type:
+                        - "CodeCommit Repository State Change"
+                    resources:
+                        - "${self:custom.repoArn}"
+
