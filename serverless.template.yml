@@ -32,7 +32,7 @@ plugins:
 functions:
     build:
         handler: handler.build
-        memorySize: 64
+        memorySize: 128
         events:
             - cloudwatchEvent:
                 event:

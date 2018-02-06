@@ -1,5 +1,4 @@
 import boto3
-import json
 import os
 
 
@@ -12,11 +11,11 @@ codebuild = boto3.client('codebuild', region_name=REGION)
 
 
 def build(event, context):
-    print(json.dumps(event))
+    print(event)
     branch=event['detail']['referenceName']
     commit=event['detail']['commitId']
     print(branch + ':' + commit)
     if BRANCH is None or BRANCH == branch:
         build = codebuild.start_build(projectName=PROJECT, sourceVersion=commit)
-        print(json.dumps(build))
+        print(build)
 
